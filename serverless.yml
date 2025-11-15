@@ -1,29 +1,25 @@
+
 org: jhonorte7
 service: api-comentario
 
 provider:
   name: aws
-  runtime: python3.13
+  runtime: python3.13	
   memorySize: 1024
   timeout: 20
   stage: ${opt:stage, 'dev'} 
-  region: us-east-1 
+  
   iam:
-    role: arn:aws:iam::758494286180:role/LabRole 
-    roleStatements: 
-      - Effect: Allow
-        Action:
-          - s3:PutObject
-        Resource: "arn:aws:s3:::${self:service}-${self:provider.stage}-ingesta-comentarios/*"
-        
+    role: arn:aws:iam::758494286180:role/LabRole
   environment:
-    TABLE_NAME: ${self:provider.stage}-t_comentarios
+    TABLE_NAME: ${sls:stage}-t_comentarios
     BUCKET_INGESTA_NAME: ${self:service}-${self:provider.stage}-ingesta-comentarios
+
 functions:
   crear:
     handler: comentario.lambda_handler
     environment:
-      BUCKET_NAME: ${self:provider.environment.BUCKET_INGESTA_NAME} 
+      BUCKET_NAME: ${self:provider.environment.BUCKET_INGESTA_NAME}
     events:
       - http:
           path: /comentario/crear
@@ -48,9 +44,9 @@ resources:
           - AttributeName: uuid
             KeyType: RANGE
         BillingMode: PAY_PER_REQUEST
-
+        
     IngestaBucket:
       Type: AWS::S3::Bucket
+      DeletionPolicy: Retain 
       Properties:
         BucketName: ${self:provider.environment.BUCKET_INGESTA_NAME}
-        DeletionPolicy: Retain 
