@@ -8,7 +8,7 @@ provider:
   memorySize: 1024
   timeout: 20
   iam:
-    role: arn:aws:iam::376711944518:role/LabRole	
+    role: arn:aws:iam::758494286180:role/LabRole	
   environment:
     TABLE_NAME: ${sls:stage}-t_comentarios
 
